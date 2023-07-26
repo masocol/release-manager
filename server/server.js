@@ -16,7 +16,11 @@ const connection = mysql.createConnection({
   user: 'root',
   password: 'Mysql-Admin!@#',
   database: 'releasemanagerdb',
+  //timezone: 'America/New_York', // Set the timezone to Eastern Standard Time
+  timezone: '-05:00',
 });
+
+// const moment = require('moment-timezone');
 
 connection.connect((err) => {
   if (err) {
@@ -28,7 +32,7 @@ connection.connect((err) => {
 
 // Routes
 app.get('/api/deployments', (req, res) => {
-  const query = 'SELECT `id`, `software_release`, `deployment_type`, `planned_installation_datetime`, `user`, `request_datetime`, `top_level_application`, `jira_items`, `comments` FROM deployments';
+  const query = 'SELECT `id`, `software_release`, `deployment_type`,`status`, `planned_installation_datetime`, `user`, `request_datetime`, `top_level_application`, `jira_items`, `comments`, `approvers` FROM deployments';
   connection.query(query, (err, results) => {
     if (err) {
       console.error('Error fetching deployments:', err);
@@ -63,6 +67,18 @@ app.get('/api/AppDataName', (req, res) => {
   });
 });
 
+app.get('/api/approver', (req, res) => {
+  const query = 'SELECT `user_name` FROM approver';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching approver:', err);
+      res.status(500).json({ error: 'Failed to fetch Approver Name' });
+      return;
+    }
+    res.json(results);
+  });
+});
+
 app.get('/api/UserAdministrationUsers', (req, res) => {
   const query = 'SELECT `user_name` FROM UserAdministration';
   connection.query(query, (err, results) => {
@@ -76,10 +92,15 @@ app.get('/api/UserAdministrationUsers', (req, res) => {
 });
 
 app.post('/api/deployments', (req, res) => {
-  const { software_release, deployment_type, status, app_name, app_name2, app_name3, app_name4, app_name5, planned_installation_datetime, user, request_datetime, top_level_application, jira_items, comments } = req.body;
+  const { software_release, deployment_type, status, planned_installation_datetime, request_datetime, user, approvers, AppDataName, jira_items, comments } = req.body;
  
-  const query = `INSERT INTO deployments (software_release, deployment_type, status, app_name, app_name2, app_name3, app_name4, app_name5, planned_installation_datetime, user, request_datetime, top_level_application, jira_items, comments) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-  const values = [software_release, deployment_type, status, app_name, app_name2, app_name3, app_name4, app_name5, planned_installation_datetime, user, request_datetime, top_level_application, jira_items, comments];
+  const query = `INSERT INTO deployments (software_release, deployment_type, status, planned_installation_datetime, user, request_datetime, jira_items, comments, top_level_application, approvers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const values = [software_release, deployment_type, status, planned_installation_datetime, user, request_datetime, jira_items, comments, AppDataName, approvers];
+  console.log('Received request body:', req.body);
+
+  //const estTime = 'America/New_York';
+  //const plannedInstallationDateTimeEst = moment.tz(req.body.planned_installation_datetime, estTime).format('YYYY-MM-DD HH:mm:ss');
+  //const requestDateTimeEst = moment.tz(req.body.request_datetime, estTime).format('YYYY-MM-DD HH:mm:ss');
   
   connection.query(query, values, (err, result) => {
     if (err) {
@@ -93,17 +114,13 @@ app.post('/api/deployments', (req, res) => {
       software_release,
       deployment_type,
       status,
-      app_name, 
-      app_name2, 
-      app_name3, 
-      app_name4, 
-      app_name5,
-      planned_installation_datetime,
+      planned_installation_datetime,   // Use the EST converted datetime
       user,
-      request_datetime,
-      top_level_application,
+      request_datetime,                // Use the EST converted datetime
       jira_items,
-      comments
+      comments,
+      AppDataName,
+      approvers
     };
     
     res.status(201).json(newDeployment);

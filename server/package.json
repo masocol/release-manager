@@ -1,6 +1,6 @@
 {
   "name": "release-manager",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
@@ -24,6 +24,8 @@
   },
   "scripts": {
     "start": "node server.js",
+    "start:uat": "set NODE_ENV=uat && react-scripts start",
+    "start:production": "set NODE_ENV=production && react-scripts start",
     "dev1": "concurrently \"npm run start\" \"cd client && npm start\"",
     "dev": "npm run start",
     "build": "react-scripts build",
@@ -52,9 +54,9 @@
     "concurrently": "^8.2.0",
     "nodemon": "^2.0.22"
   },
-  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "description": "This project was developed by Raymond Masocol ).",
   "main": "index.js",
   "keywords": [],
-  "author": "",
+  "author": "Raymond Masocol",
   "license": "ISC"
 }

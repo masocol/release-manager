@@ -1,0 +1,15 @@
+ATATT3xFfGF0GtscW7orLhVIoBR3zl48yTnzRagfn75JjQbDgB-5qGWDIAPve4VJ9mlUXawarq68v8MT_yYyPeOi5FqqCUCkDXE1PahLa5C68t6plRIwtdn5zHJtb80oij3hVUwgrUYJ8UnPLPUUfBp4ctRWVc1ThiO12sSCviAvMVHQpmCiorg=7F3CADCF
+
+
+
+<div>
+            <label htmlFor="currentDateTime">Submit Date and Time:</label>
+            <input
+              type="text"
+              id="currentDateTime"
+              name="currentDateTime"
+              value={getCurrentDateTime()}
+              readOnly
+              required
+            />
+          </div>
